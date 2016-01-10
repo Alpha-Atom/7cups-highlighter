@@ -12,7 +12,7 @@ var findName = function () {
     for ( i = 0; i < messages.length; i += 1 ) {
         var messageContent = messages[i].innerHTML.replace(/<.+?>/, ""); // remove all html from message
         var messageID = messages[i].parentNode.parentNode.id; // get the unique ID for the message
-        if (regex && !~highlighted_ids.indexOf(messageID)) { // ~ inverse trick to say not existing
+        if (regex && !~highlighted_ids.indexOf(messageID)) { // ~ inverse indexOf trick to say contains
             if (messageContent.match(regex)) {
                 audioPlayer.play();
                 highlighted_ids.push(messageID); // add message to highlighted messages
