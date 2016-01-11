@@ -25,7 +25,7 @@ var findName = function () {
 var buildRegex = function () {
     chrome.storage.sync.get("highlights", function(result) {
         var list = result.highlights; // get our list of highlights
-        var regexS = "("; // begin group
+        var regexS = "\\b("; // begin group
 
         if (list.length == 0) { 
             regex = ""; // return early if there are no highlights
