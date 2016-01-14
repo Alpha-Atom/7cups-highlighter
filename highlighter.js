@@ -1,12 +1,19 @@
 var audioPlayer = new Audio();
 var regex = ""; // global variable cause javascript scope???? just wtf
 var highlighted_ids = []; // again global because scope doesn't real
+var pageVisible = true;
+var highlightOnlyInvisible = false;
+var highlightTempDisable = false;
 
 audioPlayer.src = chrome.extension.getURL("ping.wav"); // set up audio object
+
+// TODO: update so that buildRegex and updateSettings are only called
+//       when we receive a message to say they are updated, save cycles
 
 // find your name in the messages on the screen
 var findName = function () {
     buildRegex(); // update the regular expression
+    updateSettings(); // update settings
     var messages = document.getElementsByClassName("youWrap"); // messages are contained within a youWrap class div
 
     for ( i = 0; i < messages.length; i += 1 ) {
@@ -14,7 +21,11 @@ var findName = function () {
         var messageID = messages[i].parentNode.parentNode.id; // get the unique ID for the message
         if (regex && !~highlighted_ids.indexOf(messageID)) { // ~ inverse indexOf trick to say contains
             if (messageContent.match(regex)) {
-                audioPlayer.play();
+                if ((highlightOnlyInvisible && !pageVisible) || !highlightOnlyInvisible) {
+                    if (!highlightTempDisable) {
+                        audioPlayer.play();
+                    }
+                }
                 highlighted_ids.push(messageID); // add message to highlighted messages
             }
         }
@@ -38,7 +49,25 @@ var buildRegex = function () {
     });
 }
 
+var updateSettings = function () {
+    chrome.storage.sync.get(["tempDisable", "invisHighlight"], function (result) {
+        highlightTempDisable = result.tempDisable;
+        highlightOnlyInvisible = result.invisHighlight;
+    });
+}
+
+function handleVisibilityChange() {
+    if (document.hidden) {
+        pageVisible = false;
+    } else  {
+        pageVisible = true;
+    }
+}
+
+document.addEventListener("visibilitychange", handleVisibilityChange, false);
+handleVisibilityChange();
 console.log("7cups application located"); // woo we loaded
 buildRegex(); // build initial regex
+updateSettings(); // load settings
 findName(); // find name
 setInterval(function(){findName()}, 2000); //repeat every 2 seconds

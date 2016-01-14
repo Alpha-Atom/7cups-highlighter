@@ -5,12 +5,15 @@
     </head>
     <body style="width:100%">
         <h2> Highlight Settings </h2>
-        <h5> All highlights are case insensitive </h5>
+        <h5> All highlights are case insensitive and regexes are valid <br />
+             so special characters should be escaped </h5>
 
         <div style="width:25em">
             <input type="text" name="highlightAddition" id="hA" /><br />
             <button id="add" style="margin-top:5px">Add</button>
-            <button id="clear" style="margin-top:5px">Clear All</button>
+            <button id="clear" style="margin-top:5px">Clear All</button><br /><br />
+            <span style="margin-top:5px">Temporarily Disable </span><input id="tempd" type="checkbox" /><br />
+            <span style="margin-top:5px">Highlight only when Invisible </span><input id="hvis" type="checkbox" />
         </div>
 
         <div id="existing">

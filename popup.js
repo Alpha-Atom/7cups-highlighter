@@ -1,7 +1,19 @@
 // populate list from chrome storage
 var fillList = function () {
-    chrome.storage.sync.get("highlights", function (result) {
+    chrome.storage.sync.get(["highlights", "tempDisable", "invisHighlight"], function (result) {
         var list = result.highlights;
+
+        if (result.tempDisable === true) {
+            document.getElementById("tempd").checked = true;
+        } else {
+            document.getElementById("tempd").checked = false;
+        }
+
+        if (result.invisHighlight === true) {
+            document.getElementById("hvis").checked = true;
+        } else {
+            document.getElementById("hvis").checked = false;
+        }
 
         var div = document.getElementById("list"); 
         div.innerHTML = "";
@@ -31,6 +43,20 @@ var clearList = function () {
     fillList(); //update the list
 }
 
+var changeSetting = function ( event ) {
+    var setting = event.target.id;
+
+    if (setting === "tempd") {
+       chrome.storage.sync.set({'tempDisable': event.target.checked}, 
+                               completeStorageSet);
+    } else if (setting === "hvis") {
+        chrome.storage.sync.set({'invisHighlight': event.target.checked},
+                               completeStorageSet);
+    }
+    fillList();
+}
+
+// function clears a single word, uses id of the evt target
 var clearOne = function ( event ) {
     clearWord = event.target.id; // delete the target of the click event
     chrome.storage.sync.get("highlights", function (result) {
@@ -48,6 +74,10 @@ var clearOne = function ( event ) {
 // add a new word to the highlight list
 var addToList = function () {
     var newh = document.getElementById("hA").value;
+
+    if (newh === undefined || newh === "") {
+        return;
+    }
 
     chrome.storage.sync.get("highlights", function (result) {
         var list = result.highlights;
@@ -74,4 +104,6 @@ var completeStorageSet = function () {
 // set up onclick handlers and list fillers
 document.getElementById("add").onclick = addToList;
 document.getElementById("clear").onclick = clearList;
+document.getElementById("tempd").onchange = changeSetting;
+document.getElementById("hvis").onchange = changeSetting;
 fillList();
