@@ -7,7 +7,7 @@
     "128": "icon128.png"
   },
   "description": "This extension implements a highlight function when someone mentions your name on 7Cups",
-  "version": "1.3",
+  "version": "1.5",
   "web_accessible_resources": ["ping.wav"],
 
   "browser_action": {

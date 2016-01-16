@@ -37,12 +37,14 @@ var findName = function () {
             tagged_ids.push(messageID);
         }
     }
+    if (highlightUserLink) {
     for ( i = 0; i < mymessages.length; i += 1 ) {
         var mymessageID = mymessages[i].parentNode.parentNode.id; // get the unique ID for the message
-        if (!~tagged_ids.indexOf(mymessageID) && highlightUserLink) {
+        if (!~tagged_ids.indexOf(mymessageID)) {
             mymessages[i].innerHTML = mymessages[i].innerHTML.replace(/[@](.+?)\b/g, '<a href="/$&" data-usercard="$1"><span class="userScreenName">$&</span></a>');
             tagged_ids.push(mymessageID);
         }
+    }
     }
 };
 
