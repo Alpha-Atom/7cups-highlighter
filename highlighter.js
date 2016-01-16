@@ -1,9 +1,11 @@
 var audioPlayer = new Audio();
 var regex = ""; // global variable cause javascript scope???? just wtf
 var highlighted_ids = []; // again global because scope doesn't real
+var tagged_ids = [];
 var pageVisible = true;
 var highlightOnlyInvisible = false;
 var highlightTempDisable = false;
+var highlightUserLink = false;
 
 audioPlayer.src = chrome.extension.getURL("ping.wav"); // set up audio object
 
@@ -15,6 +17,7 @@ var findName = function () {
     buildRegex(); // update the regular expression
     updateSettings(); // update settings
     var messages = document.getElementsByClassName("youWrap"); // messages are contained within a youWrap class div
+    var mymessages = document.getElementsByClassName("meWrap");
 
     for ( i = 0; i < messages.length; i += 1 ) {
         var messageContent = messages[i].innerHTML.replace(/<.+?>/, ""); // remove all html from message
@@ -28,6 +31,17 @@ var findName = function () {
                 }
                 highlighted_ids.push(messageID); // add message to highlighted messages
             }
+        }
+        if (!~tagged_ids.indexOf(messageID) && highlightUserLink) {
+            messages[i].innerHTML = messages[i].innerHTML.replace(/[@](.+?)\b/g, '<a href="/$&" data-usercard="$1"><span class="userScreenName">$&</span></a>');
+            tagged_ids.push(messageID);
+        }
+    }
+    for ( i = 0; i < mymessages.length; i += 1 ) {
+        var mymessageID = mymessages[i].parentNode.parentNode.id; // get the unique ID for the message
+        if (!~tagged_ids.indexOf(mymessageID) && highlightUserLink) {
+            mymessages[i].innerHTML = mymessages[i].innerHTML.replace(/[@](.+?)\b/g, '<a href="/$&" data-usercard="$1"><span class="userScreenName">$&</span></a>');
+            tagged_ids.push(mymessageID);
         }
     }
 };
@@ -50,9 +64,10 @@ var buildRegex = function () {
 }
 
 var updateSettings = function () {
-    chrome.storage.sync.get(["tempDisable", "invisHighlight"], function (result) {
+    chrome.storage.sync.get(["tempDisable", "invisHighlight", "userLink"], function (result) {
         highlightTempDisable = result.tempDisable;
         highlightOnlyInvisible = result.invisHighlight;
+        highlightUserLink = result.userLink;
     });
 }
 

@@ -1,6 +1,6 @@
 // populate list from chrome storage
 var fillList = function () {
-    chrome.storage.sync.get(["highlights", "tempDisable", "invisHighlight"], function (result) {
+    chrome.storage.sync.get(["highlights", "tempDisable", "invisHighlight", "userLink"], function (result) {
         var list = result.highlights;
 
         if (result.tempDisable === true) {
@@ -13,6 +13,12 @@ var fillList = function () {
             document.getElementById("hvis").checked = true;
         } else {
             document.getElementById("hvis").checked = false;
+        }
+
+        if (result.userLink === true) {
+            document.getElementById("ulink").checked = true;
+        } else {
+            document.getElementById("ulink").checked = false;
         }
 
         var div = document.getElementById("list"); 
@@ -51,6 +57,9 @@ var changeSetting = function ( event ) {
                                completeStorageSet);
     } else if (setting === "hvis") {
         chrome.storage.sync.set({'invisHighlight': event.target.checked},
+                               completeStorageSet);
+    } else if (setting === "ulink") {
+        chrome.storage.sync.set({'userLink': event.target.checked},
                                completeStorageSet);
     }
     fillList();
@@ -106,4 +115,5 @@ document.getElementById("add").onclick = addToList;
 document.getElementById("clear").onclick = clearList;
 document.getElementById("tempd").onchange = changeSetting;
 document.getElementById("hvis").onchange = changeSetting;
+document.getElementById("ulink").onchange = changeSetting;
 fillList();
