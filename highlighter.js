@@ -33,12 +33,16 @@ var findName = function () {
             }
         }
         if (highlightUserLink) {
-            messages[i].innerHTML = messages[i].innerHTML.replace(/(\s)([@](.+?))\b/g, '$1<a href="/$2" data-usercard="$3"><span class="userScreenName">$2</span></a>');
+            if (mymessages[i].innerHTML.match(/\s[@].+?\b/g)) {
+                messages[i].innerHTML = messages[i].innerHTML.replace(/(\s)([@](.+?))\b/g, '$1<a href="/$2" data-usercard="$3"><span class="userScreenName">$2</span></a>');
+            }
         }
     }
     if (highlightUserLink) {
         for ( i = 0; i < mymessages.length; i += 1 ) {
-            mymessages[i].innerHTML = mymessages[i].innerHTML.replace(/(\s)([@](.+?))\b/g, '$1<a href="/$2" data-usercard="$3"><span class="userScreenName">$2</span></a>');
+            if (mymessages[i].innerHTML.match(/\s[@].+?\b/g)) {
+                mymessages[i].innerHTML = mymessages[i].innerHTML.replace(/(\s)([@](.+?))\b/g, '$1<a href="/$2" data-usercard="$3"><span class="userScreenName">$2</span></a>');
+            }
         }
     }
 };
