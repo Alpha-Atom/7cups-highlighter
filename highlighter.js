@@ -33,7 +33,7 @@ var findName = function () {
             }
         }
         if (highlightUserLink) {
-            if (mymessages[i].innerHTML.match(/\s[@].+?\b/g)) {
+            if (messages[i].innerHTML.match(/\s[@].+?\b/g)) {
                 messages[i].innerHTML = messages[i].innerHTML.replace(/(\s)([@](.+?))\b/g, '$1<a href="/$2" data-usercard="$3"><span class="userScreenName">$2</span></a>');
             }
         }
