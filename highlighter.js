@@ -33,16 +33,16 @@ var findName = function () {
             }
         }
         if (highlightUserLink) {
-            if (messages[i].innerHTML.match(/\s[@].+?\b/g)) {
-                messages[i].innerHTML = messages[i].innerHTML.replace(/(\s)([@](.+?))\b/g, 
+            if (messages[i].innerHTML.match(/\s?[@].+?\b/g)) {
+                messages[i].innerHTML = messages[i].innerHTML.replace(/(\s?)([@](.+?))\b/g,
                                                                       '$1<a target="_blank" href="/$2" data-usercard="$3"><span class="userScreenName">$2</span></a>');
             }
         }
     }
     if (highlightUserLink) {
         for ( i = 0; i < mymessages.length; i += 1 ) {
-            if (mymessages[i].innerHTML.match(/\s[@].+?\b/g)) {
-                mymessages[i].innerHTML = mymessages[i].innerHTML.replace(/(\s)([@](.+?))\b/g, 
+            if (mymessages[i].innerHTML.match(/\s?[@].+?\b/g)) {
+                mymessages[i].innerHTML = mymessages[i].innerHTML.replace(/(\s?)([@](.+?))\b/g,
                                                                           '$1<a target="_blank" href="/$2" data-usercard="$3"><span class="userScreenName">$2</span></a>');
             }
         }
@@ -55,7 +55,7 @@ var buildRegex = function () {
         var list = result.highlights; // get our list of highlights
         var regexS = "\\b("; // begin group
 
-        if (list.length == 0) { 
+        if (list.length == 0) {
             regex = ""; // return early if there are no highlights
             return;
         }
