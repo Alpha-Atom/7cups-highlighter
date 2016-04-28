@@ -30,9 +30,12 @@ var findName = function () {
                     number++;
                     if (!highlightTempDisable && !firstcheck) {
                         audioPlayer.play();
-                        var userName = messages[i].parentNode.getElementsByClassName("details")[0].getElementsByClassName("userScreenName")[0].innerHTML;
+                        var userName = messages[i].parentNode.getElementsByClassName("details");
+                        if (userName.length > 0) {
+                        userName = userName[0].getElementsByClassName("userScreenName")[0].innerHTML;
                         notifyMe(userName, "Highlighted: " + messageContent);
                     }
+                }
                 }
                 highlighted_ids.push(messageID); // add message to highlighted messages
             }
