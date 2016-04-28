@@ -1,6 +1,6 @@
 var audioPlayer = new Audio();
-var regex = ""; // global variable cause javascript scope???? just wtf
-var highlighted_ids = []; // again global because scope doesn't real
+var regex = "";
+var highlighted_ids = [];
 var tagged_ids = [];
 var pageVisible = true;
 var highlightOnlyInvisible = false;
@@ -16,14 +16,13 @@ audioPlayer.src = chrome.extension.getURL("ping.wav"); // set up audio object
 
 // find your name in the messages on the screen
 var findName = function () {
-    console.log("RUNNING");
     buildRegex(); // update the regular expression
     updateSettings(); // update settings
     var messages = document.getElementsByClassName("youWrap"); // messages are contained within a youWrap class div
     var mymessages = document.getElementsByClassName("meWrap");
 
     for ( i = 0; i < messages.length; i += 1 ) {
-        var messageContent = messages[i].innerHTML.replace(/<.+?>/g, ""); // remove all html from message
+        var messageContent = messages[i].innerHTML.replace(/<.+?>/gi, ""); // remove all html from message
         var messageID = messages[i].parentNode.parentNode.id; // get the unique ID for the message
         if (regex && !~highlighted_ids.indexOf(messageID)) { // ~ inverse indexOf trick to say contains
             if (messageContent.match(regex)) {
