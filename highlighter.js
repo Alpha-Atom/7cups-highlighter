@@ -6,6 +6,8 @@ var pageVisible = true;
 var highlightOnlyInvisible = false;
 var highlightTempDisable = false;
 var highlightUserLink = false;
+var firstcheck = true;
+var number = 0;
 
 audioPlayer.src = chrome.extension.getURL("ping.wav"); // set up audio object
 
@@ -14,35 +16,42 @@ audioPlayer.src = chrome.extension.getURL("ping.wav"); // set up audio object
 
 // find your name in the messages on the screen
 var findName = function () {
+    console.log("RUNNING");
     buildRegex(); // update the regular expression
     updateSettings(); // update settings
     var messages = document.getElementsByClassName("youWrap"); // messages are contained within a youWrap class div
     var mymessages = document.getElementsByClassName("meWrap");
 
     for ( i = 0; i < messages.length; i += 1 ) {
-        var messageContent = messages[i].innerHTML.replace(/<.+?>/, ""); // remove all html from message
+        var messageContent = messages[i].innerHTML.replace(/<.+?>/g, ""); // remove all html from message
         var messageID = messages[i].parentNode.parentNode.id; // get the unique ID for the message
         if (regex && !~highlighted_ids.indexOf(messageID)) { // ~ inverse indexOf trick to say contains
             if (messageContent.match(regex)) {
                 if ((highlightOnlyInvisible && !pageVisible) || !highlightOnlyInvisible) {
-                    if (!highlightTempDisable) {
+                    number++;
+                    if (!highlightTempDisable && !firstcheck) {
                         audioPlayer.play();
+                        var userName = messages[i].parentNode.getElementsByClassName("details")[0].getElementsByClassName("userScreenName")[0].innerHTML;
+                        notifyMe(userName, "Highlighted: " + messageContent);
                     }
                 }
                 highlighted_ids.push(messageID); // add message to highlighted messages
             }
         }
         if (highlightUserLink) {
-            if (messages[i].innerHTML.match(/\s?[@].+?\b/g)) {
-                messages[i].innerHTML = messages[i].innerHTML.replace(/(\s?)([@](.+?))\b/g,
+            if (messages[i].innerHTML.match(/(^|\s)[@].+?\b/g)) {
+                messages[i].innerHTML = messages[i].innerHTML.replace(/(^|\s)([@](.+?))\b/g,
                                                                       '$1<a target="_blank" href="/$2" data-usercard="$3"><span class="userScreenName">$2</span></a>');
             }
         }
     }
+    if (number > 0) {
+      firstcheck = false;
+    }
     if (highlightUserLink) {
         for ( i = 0; i < mymessages.length; i += 1 ) {
-            if (mymessages[i].innerHTML.match(/\s?[@].+?\b/g)) {
-                mymessages[i].innerHTML = mymessages[i].innerHTML.replace(/(\s?)([@](.+?))\b/g,
+            if (mymessages[i].innerHTML.match(/(^|\s)[@].+?\b/g)) {
+                mymessages[i].innerHTML = mymessages[i].innerHTML.replace(/(^|\s)([@](.+?))\b/g,
                                                                           '$1<a target="_blank" href="/$2" data-usercard="$3"><span class="userScreenName">$2</span></a>');
             }
         }
@@ -80,6 +89,30 @@ function handleVisibilityChange() {
     } else  {
         pageVisible = true;
     }
+}
+
+// request permission on page load
+document.addEventListener('DOMContentLoaded', function () {
+  if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+});
+
+function notifyMe(username, text) {
+  if (!Notification) {
+    alert('Desktop notifications not available in your browser. Try Chromium.');
+    return;
+  }
+
+  if (Notification.permission !== "granted")
+    Notification.requestPermission();
+  else {
+    var notification = new Notification(username, {
+      icon: 'https://s3-us-west-2.amazonaws.com/7cupstearesources/img/favicon.png',
+      body: text,
+    });
+  }
+
 }
 
 document.addEventListener("visibilitychange", handleVisibilityChange, false);
