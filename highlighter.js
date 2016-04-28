@@ -16,81 +16,81 @@ audioPlayer.src = chrome.extension.getURL("ping.wav"); // set up audio object
 
 // find your name in the messages on the screen
 var findName = function () {
-    buildRegex(); // update the regular expression
-    updateSettings(); // update settings
-    var messages = document.getElementsByClassName("youWrap"); // messages are contained within a youWrap class div
-    var mymessages = document.getElementsByClassName("meWrap");
+  buildRegex(); // update the regular expression
+  updateSettings(); // update settings
+  var messages = document.getElementsByClassName("youWrap"); // messages are contained within a youWrap class div
+  var mymessages = document.getElementsByClassName("meWrap");
 
-    for ( i = 0; i < messages.length; i += 1 ) {
-        var messageContent = messages[i].innerHTML.replace(/<.+?>/gi, ""); // remove all html from message
-        var messageID = messages[i].parentNode.parentNode.id; // get the unique ID for the message
-        if (regex && !~highlighted_ids.indexOf(messageID)) { // ~ inverse indexOf trick to say contains
-            if (messageContent.match(regex)) {
-                if ((highlightOnlyInvisible && !pageVisible) || !highlightOnlyInvisible) {
-                    number++;
-                    if (!highlightTempDisable && !firstcheck) {
-                        audioPlayer.play();
-                        var userName = messages[i].parentNode.getElementsByClassName("details");
-                        if (userName.length > 0) {
-                        userName = userName[0].getElementsByClassName("userScreenName")[0].innerHTML;
-                        notifyMe(userName, "Highlighted: " + messageContent);
-                    }
-                }
-                }
-                highlighted_ids.push(messageID); // add message to highlighted messages
+  for ( i = 0; i < messages.length; i += 1 ) {
+    var messageContent = messages[i].innerHTML.replace(/<.+?>/gi, ""); // remove all html from message
+    var messageID = messages[i].parentNode.parentNode.id; // get the unique ID for the message
+    if (regex && !~highlighted_ids.indexOf(messageID)) { // ~ inverse indexOf trick to say contains
+      if (messageContent.match(regex)) {
+        if ((highlightOnlyInvisible && !pageVisible) || !highlightOnlyInvisible) {
+          number++;
+          if (!highlightTempDisable && !firstcheck) {
+            audioPlayer.play();
+            var userName = messages[i].parentNode.getElementsByClassName("details");
+            if (userName.length > 0) {
+              userName = userName[0].getElementsByClassName("userScreenName")[0].innerHTML;
+              notifyMe(userName, "Highlighted: " + messageContent);
             }
+          }
         }
-        if (highlightUserLink) {
-            if (messages[i].innerHTML.match(/(^|\s)[@].+?\b/g)) {
-                messages[i].innerHTML = messages[i].innerHTML.replace(/(^|\s)([@](.+?))\b/g,
-                                                                      '$1<a target="_blank" href="/$2" data-usercard="$3"><span class="userScreenName">$2</span></a>');
-            }
-        }
-    }
-    if (number > 0) {
-      firstcheck = false;
+        highlighted_ids.push(messageID); // add message to highlighted messages
+      }
     }
     if (highlightUserLink) {
-        for ( i = 0; i < mymessages.length; i += 1 ) {
-            if (mymessages[i].innerHTML.match(/(^|\s)[@].+?\b/g)) {
-                mymessages[i].innerHTML = mymessages[i].innerHTML.replace(/(^|\s)([@](.+?))\b/g,
-                                                                          '$1<a target="_blank" href="/$2" data-usercard="$3"><span class="userScreenName">$2</span></a>');
-            }
-        }
+      if (messages[i].innerHTML.match(/(^|\s)[@].+?\b/g)) {
+        messages[i].innerHTML = messages[i].innerHTML.replace(/(^|\s)([@](.+?))\b/g,
+                                                              '$1<a target="_blank" href="/$2" data-usercard="$3"><span class="userScreenName">$2</span></a>');
+      }
     }
+  }
+  if (number > 0) {
+    firstcheck = false;
+  }
+  if (highlightUserLink) {
+    for ( i = 0; i < mymessages.length; i += 1 ) {
+      if (mymessages[i].innerHTML.match(/(^|\s)[@].+?\b/g)) {
+        mymessages[i].innerHTML = mymessages[i].innerHTML.replace(/(^|\s)([@](.+?))\b/g,
+                                                                  '$1<a target="_blank" href="/$2" data-usercard="$3"><span class="userScreenName">$2</span></a>');
+      }
+    }
+  }
 };
 
 // build the regex from chrome storage
 var buildRegex = function () {
-    chrome.storage.sync.get("highlights", function(result) {
-        var list = result.highlights; // get our list of highlights
-        var regexS = "\\b("; // begin group
+  chrome.storage.sync.get("highlights", function(result) {
+    var list = result.highlights; // get our list of highlights
+    var regexS = "\\b("; // begin group
 
-        if (list.length == 0) {
-            regex = ""; // return early if there are no highlights
-            return;
-        }
-        for (i = 0; i < list.length; i +=1 ) {
-            regexS += (i == list.length-1) ? list[i] + ")\\b" : list[i] + "|"; // add boundary and close if last word, otherwise use or
-        }
-        regex = new RegExp(regexS, 'gi'); // construct a regexp object with gi flags, global & case insensitive
-    });
+    if (list.length == 0) {
+      regex = ""; // return early if there are no highlights
+      return;
+    }
+    for (i = 0; i < list.length; i +=1 ) {
+      regexS += (i == list.length-1) ? list[i] + ")\\b" : list[i] + "|"; // add boundary and close if last word, otherwise use or
+    }
+    regex = new RegExp(regexS, 'gi'); // construct a regexp object with gi flags, global & case insensitive
+  });
 }
 
 var updateSettings = function () {
-    chrome.storage.sync.get(["tempDisable", "invisHighlight", "userLink"], function (result) {
-        highlightTempDisable = result.tempDisable;
-        highlightOnlyInvisible = result.invisHighlight;
-        highlightUserLink = result.userLink;
-    });
+  chrome.storage.sync.get(["tempDisable", "invisHighlight", "userLink"], function (result) {
+    highlightTempDisable = result.tempDisable;
+    highlightOnlyInvisible = result.invisHighlight;
+    highlightUserLink = result.userLink;
+  });
 }
 
 function handleVisibilityChange() {
-    if (document.hidden) {
-        pageVisible = false;
-    } else  {
-        pageVisible = true;
-    }
+  if (document.hidden) {
+    pageVisible = false;
+  } else  {
+    pageVisible = true;
+  }
 }
 
 // request permission on page load
