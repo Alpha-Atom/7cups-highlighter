@@ -30,10 +30,11 @@ var findName = function () {
           number++;
           if (!highlightTempDisable && !firstcheck) {
             audioPlayer.play();
-            var userName = messages[i].parentNode.getElementsByClassName("details");
+            var userName = messages[i].parentNode.getElementsByClassName("details")[0].getElementsByClassName("userScreenName");
             if (userName.length > 0) {
-              userName = userName[0].getElementsByClassName("userScreenName")[0].innerHTML;
-              notifyMe(userName, "Highlighted: " + messageContent);
+              userName = userName[0].innerHTML;
+              var picture = messages[i].parentNode.getElementsByClassName("youImg")[0].childNodes[0].childNodes[0].style.cssText.match(/\(["'](.+?)["']\)/)[1];
+              notifyMe(userName, "Highlighted: " + messageContent, picture);
             }
           }
         }
@@ -100,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
-function notifyMe(username, text) {
+function notifyMe(username, text, pic) {
   if (!Notification) {
     alert('Desktop notifications not available in your browser. Try Chromium.');
     return;
@@ -110,9 +111,10 @@ function notifyMe(username, text) {
     Notification.requestPermission();
   else {
     var notification = new Notification(username, {
-      icon: 'https://s3-us-west-2.amazonaws.com/7cupstearesources/img/favicon.png',
+      icon: pic,
       body: text,
     });
+    setTimeout(function() { notification.close() }, 3000);
   }
 
 }
