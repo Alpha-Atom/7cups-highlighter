@@ -114,7 +114,14 @@ function notifyMe(username, text, pic) {
       icon: pic,
       body: text,
     });
-    setTimeout(function() { notification.close() }, 3000);
+
+    notification.onclick = function(event) {
+      notification.close();
+      chrome.runtime.sendMessage({
+        from:    'content',
+        subject: 'showPageAction'
+      });
+    };
   }
 
 }
