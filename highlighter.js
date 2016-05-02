@@ -122,6 +122,8 @@ function notifyMe(username, text, pic) {
         subject: 'showPageAction'
       });
     };
+
+    setTimeout(function() { notification.close() }, 6000);
   }
 
 }
